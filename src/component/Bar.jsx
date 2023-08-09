@@ -1,9 +1,12 @@
 import React, { useRef, useState } from "react";
 // import qrcode from "qrcode";
-import { BrowserMultiFormatReader, MultiFormatReader } from "@zxing/library";
+
+import BarcodeScannerComponent from "react-qr-barcode-scanner";
+
 // import QrReader from "react-qr-reader";
 import Barcode from "react-barcode";
-// import Quagga from "quagga";
+// import CameraComponent from "./Camera";
+// import Quagga from "quagga-react";
 // import QRCode from "@zxing/library/esm/core/qrcode/encoder/QRCode";
 
 const BarcodeGenerator = () => {
@@ -11,28 +14,44 @@ const BarcodeGenerator = () => {
   const [fileResult, setFileResult] = useState();
   const [webcamResult, setwebcamResult] = useState();
   const [text, setText] = useState(" ");
-  const [imageQR, setImageQR] = useState();
+  const [data, setData] = React.useState(" ");
+  // const [imageQR, setImageQR] = useState();
 
-  const handleWebcamScan = async () => {
-    const codeReader = new BrowserMultiFormatReader();
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "face" },
-      });
-      const result = await codeReader.decodeFromStream(stream);
-      webcamResult(result.text);
-    } catch (error) {
-      console.error("Error scanning barcode:", error);
-    }
-  };
-  const generateBarcode = async () => {
-    let image = await BarcodeGenerator.toDataURL(text);
-    setImageQR(image);
-  };
+  // const handleWebcamScan = async () => {
+  //   const codeReader = new BrowserMultiFormatReader();
+  //   try {
+  //     const stream = await navigator.mediaDevices.getUserMedia({
+  //       video: { facingMode: "environment" },
+  //     });
 
-  const openDialog = () => {
-    qrRef.current.openImageDialog();
-  };
+  //     const result = await codeReader.decodeFromStream(stream, "camera");
+  //     webcamResult(result.text);
+  //   } catch (error) {
+  //     console.error("Error scanning barcode:", error);
+  //   }
+  // };
+  // const generateBarcode = async () => {
+  //   let image = await BarcodeGenerator.toDataURL(text);
+  //   setImageQR(image);
+  // };
+  // useEffect(() => {
+  //   const constraints = { video: true };
+
+  //   async function openWebcam() {
+  //     try {
+  //       const userMediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+  //       setStream(userMediaStream);
+  //     } catch (error) {
+  //       console.error('Error accessing webcam:', error);
+  //     }
+  //   }
+
+  //   openWebcam();
+
+  // const openWebcamScan = () => {
+  //   qrRef.current.openWebcamScan();
+  // };
+
   const fileError = (error) => {
     if (error) {
       console.log(error);
@@ -68,7 +87,7 @@ const BarcodeGenerator = () => {
         <input
           type="text"
           className="col-sm-4 mt-4 p-2 rounded"
-          value={text}
+          value={data}
           onChange={(e) => setText(e.target.value)}
         />
         {/* <button
@@ -116,21 +135,34 @@ const BarcodeGenerator = () => {
           <div className="card-footer rounded mb-1">
             <h6>Image result :{fileResult}</h6>
           </div>
-          <div className="card col-sm-4 m-2">
-            <MultiFormatReader
-              ref={qrRef}
-              delay={300}
+          <div className="card col-sm-10 m-4">
+            {/* <CameraComponent /> */}
+            {/* <MultiFormatReader
+              // ref={qrRef}
+              delay={500}
               onError={webcamError}
               onScan={webcamScan}
               legacyMode={false}
               facingMode={"environment"}
+            /> */}
+            <BarcodeScannerComponent
+              width={400}
+              height={400}
+              onUpdate={(err, result) => {
+                console.log(err);
+                if (result) setData(result.text);
+                else setData("Not found");
+              }}
             />
-
+            <p>{data}</p>
             <div className="card-footer rounded mb-1">
+              {/* <video id="camera" style={{ display: "none" }}></video> */}
+
               <h6>webcam Result:{webcamResult}</h6>
               <button
                 className="sm-2 btn btn-success m-2 mt-4"
-                onClick={handleWebcamScan}
+                // onClick={handleWebcamScan}
+                // onClick={openWebcamScan}
               >
                 Generate
               </button>
